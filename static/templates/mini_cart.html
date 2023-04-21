@@ -1,0 +1,18 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<div class="minicart-wrapper">
+  <div class="minicart">
+    <p>Cart:</p>
+    <div class="cart-items-wrapper">
+      <ul>
+        {% for item in cart.items.all %}
+          <li><img src="{{ item.product.image.url }}" alt="{{ product.name }}"> {{ item.product.name }} ({{ item.quantity }})</li>
+        {% endfor %}
+        <li>Total: {{ cart.total }}</li>
+        <a href="{% url 'cart' %}">
+          <li>Cart</li>
+        </a>
+      </ul>
+    </div>
+  </div>
+</div>

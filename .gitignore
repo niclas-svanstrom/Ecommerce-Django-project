@@ -1,0 +1,4 @@
+/env
+__pycache__/
+howto.txt
+/e_commerce/settings.py

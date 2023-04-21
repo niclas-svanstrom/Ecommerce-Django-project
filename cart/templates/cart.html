@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>Cart</h1>
+    <div class="container">
+    <div class="product-row">
+        {% for item in items %}
+        <div class="product">
+            <p>{{ item.product.name }}</p>
+            <p>Price: {{ item.price }}</p>
+            <img src="{{ item.product.image.url }}" alt="{{ item.name }}">
+            <form method="POST" action="{% url 'update_cart' item.product.id %}">
+              {% csrf_token %}
+              <div class="form-group">
+                <label for="quantity">Quantity:</label>
+                <select class="form-control quantity-dropdown" id="quantity" name="quantity" data-url="{% url 'update_cart' item.product.id %}">
+                  <option value="{{ item.quantity }}" selected>{{ item.quantity }}</option>
+                  {% for i in "0123456789" %}
+                      {% if i != item.quantity %}
+                          <option value="{{ i }}">{{ i }}</option>
+                      {% endif %}
+                  {% endfor %}
+              </select>
+            </div>
+            </form>
+            <form method="POST" action="{% url 'remove_from_cart' product_id=item.product.id %}">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ item.product.id }}">
+              <button type="submit" class="btn btn-danger">Remove</button>
+            </form>
+            {{ item.subtotal }}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+    {{ cart.total }}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('.quantity-dropdown').on('change', function() {
+            var product_id = $(this).closest('.product').find('form').find('input[name="product_id"]').val();
+            var quantity = $(this).val();
+            var url = $(this).data('url');
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    'product_id': product_id,
+                    'quantity': quantity,
+                    'csrfmiddlewaretoken': $('input[name="csrfmiddlewaretoken"]').val()
+                },
+                success: function(data) {
+                    // Optional: reload the page to update the cart in the navbar
+                    location.reload();
+                },
+                error: function(xhr, status, error) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
